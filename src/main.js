@@ -5,7 +5,7 @@ import { FONTS } from './fonts.js';
 
 const $ = (id) => document.getElementById(id);
 const els = Object.fromEntries(
-  ['file', 'drop', 'previewWrap', 'preview', 'overlay', 'meta', 'speed', 'fps', 'keepAudio', 'timerOn',
+  ['file', 'drop', 'previewWrap', 'preview', 'overlay', 'meta', 'speed', 'height', 'fps', 'keepAudio', 'timerOn',
     'timerOpts', 'font', 'format', 'position', 'size', 'color', 'box', 'export', 'progressWrap', 'progress',
     'status', 'cancel', 'error', 'result', 'output', 'download'].map((id) => [id, $(id)]),
 );
@@ -131,6 +131,8 @@ els.export.addEventListener('click', async () => {
     const input = `input.${ext}`;
     await ff.writeFile(input, await fetchFile(file));
 
+    const height = Number(els.height.value) || null;
+    const outHeight = height ? Math.min(height, v.videoHeight) : v.videoHeight;
     let timer = null;
     if (els.timerOn.checked) {
       const font = currentFont();
@@ -139,7 +141,7 @@ els.export.addEventListener('click', async () => {
         fontFile: font.file,
         format: els.format.value,
         position: els.position.value,
-        fontSize: Math.max(8, Math.round(v.videoHeight * sizePct())),
+        fontSize: Math.max(8, Math.round(outHeight * sizePct())),
         color: els.color.value.replace('#', '0x'),
         box: els.box.checked,
       };
@@ -160,7 +162,7 @@ els.export.addEventListener('click', async () => {
     setStatus('Encoding…', 0);
 
     const args = buildArgs({
-      input, output: 'output.mp4', speed: speed(), fps: Number(els.fps.value),
+      input, output: 'output.mp4', speed: speed(), fps: Number(els.fps.value), height,
       keepAudio: els.keepAudio.checked, timer,
     });
     const rc = await ff.exec(args);

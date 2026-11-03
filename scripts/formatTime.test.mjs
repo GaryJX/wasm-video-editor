@@ -50,3 +50,15 @@ for (const format of Object.keys(TIMER_FORMATS)) {
     });
   }
 }
+
+// The export path passes `t*speed` (t = output time); it must still match source time.
+for (const format of Object.keys(TIMER_FORMATS)) {
+  test(`formatTime_${format}_spedUpExpression_matchesDrawtextOutput`, () => {
+    // Arrange: output time 2.5s at 4x is source time 10s
+    const expected = renderDrawtext(TIMER_FORMATS[format]('t*4'), 2.5);
+    // Act
+    const actual = formatTime(10, format);
+    // Assert
+    assert.equal(actual, expected);
+  });
+}

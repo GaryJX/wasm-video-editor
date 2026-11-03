@@ -40,18 +40,38 @@ test('buildArgs_dropAudio_usesAnAndNoAf', () => {
   assert.ok(!args.includes('-af'));
 });
 
-test('buildArgs_timer_drawtextRunsBeforeSpeedUp', () => {
-  const vf = opt(buildArgs({ ...base, timer }), '-vf');
-  // Source-time timer depends on drawtext seeing pre-speed-up timestamps.
-  assert.ok(vf.indexOf('drawtext=') < vf.indexOf('setpts=PTS/2'));
-  assert.ok(vf.startsWith('setpts=PTS-STARTPTS,drawtext='));
+test('buildArgs_timer_drawtextRunsAfterFrameDropWithSourceTime', () => {
+  // Arrange/Act
+  const vf = opt(buildArgs({ ...base, speed: 3, timer }), '-vf');
+  // Assert: drawtext only sees kept frames, and scales `t` back to source time.
+  assert.ok(vf.startsWith('setpts=PTS-STARTPTS,setpts=PTS/3,fps=30,drawtext='));
+  assert.ok(vf.includes(`text='${TIMER_FORMATS['mm:ss']('t*3')}'`));
+});
+
+test('buildArgs_noHeight_noScaleAndNoFastDecode', () => {
+  const args = buildArgs(base);
+  assert.doesNotMatch(opt(args, '-vf'), /scale=/);
+  assert.ok(!args.includes('-skip_loop_filter'));
+});
+
+test('buildArgs_height_scalesWithoutUpscalingAndEnablesFastDecode', () => {
+  // Arrange/Act
+  const args = buildArgs({ ...base, height: 720 });
+  // Assert
+  assert.equal(opt(args, '-vf'), 'setpts=PTS-STARTPTS,setpts=PTS/2,fps=30,scale=-2:min(720\\,ih):flags=bilinear');
+  assert.deepEqual(args.slice(0, 4), ['-skip_loop_filter', 'all', '-i', 'in.mp4']);
+});
+
+test('buildArgs_heightAndTimer_scaleRunsBeforeDrawtext', () => {
+  const vf = opt(buildArgs({ ...base, height: 480, timer }), '-vf');
+  assert.ok(vf.indexOf('scale=') < vf.indexOf('drawtext='));
 });
 
 test('buildArgs_timer_includesFontSizeColorAndText', () => {
   const vf = opt(buildArgs({ ...base, timer }), '-vf');
   assert.match(vf, /fontfile=f\.ttf/);
   assert.match(vf, /fontsize=40:fontcolor=0xffffff/);
-  assert.ok(vf.includes(`text='${TIMER_FORMATS['mm:ss']()}'`));
+  assert.ok(vf.includes(`text='${TIMER_FORMATS['mm:ss']('t*2')}'`));
 });
 
 for (const [position, x, y] of [
@@ -87,7 +107,7 @@ test('buildArgs_video_encodesH264Yuv420Faststart', () => {
 
 test('TIMER_FORMATS_allFormats_escapeColonsAndCommas', () => {
   for (const [name, fn] of Object.entries(TIMER_FORMATS)) {
-    const text = fn();
+    const text = fn('t*2.5');
     // Unescaped ':' or ',' would split the drawtext option / filter chain.
     assert.doesNotMatch(text, /(?<!\\)[:,]/, name);
     assert.ok(text.includes('%{eif'), name);
