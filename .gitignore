@@ -1,0 +1,4 @@
+node_modules
+dist
+# copied from @ffmpeg/core by `npm run copy-core`
+public/ffmpeg

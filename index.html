@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tiny Video Editor</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Tiny Video Editor</h1>
+      <p class="sub">Runs entirely in your browser (ffmpeg.wasm). Nothing is uploaded.</p>
+    </header>
+
+    <main>
+      <section class="stage">
+        <label id="drop" class="drop">
+          <input id="file" type="file" accept="video/mp4,video/*" hidden />
+          <span>Drop an MP4 here, or click to choose</span>
+        </label>
+        <div id="previewWrap" class="preview" hidden>
+          <video id="preview" controls playsinline></video>
+          <div id="overlay" class="overlay"></div>
+        </div>
+        <p id="meta" class="meta"></p>
+      </section>
+
+      <section class="controls">
+        <fieldset>
+          <legend>Speed</legend>
+          <label>Speed-up factor (×)
+            <input id="speed" type="number" min="0.25" max="100" step="0.25" value="2" />
+          </label>
+          <label>Output FPS
+            <select id="fps"><option>24</option><option selected>30</option><option>60</option></select>
+          </label>
+          <label class="row"><input id="keepAudio" type="checkbox" checked /> Keep audio (pitch-corrected)</label>
+        </fieldset>
+
+        <fieldset>
+          <legend><label class="row"><input id="timerOn" type="checkbox" checked /> Timer</label></legend>
+          <div id="timerOpts">
+            <label>Font <select id="font"></select></label>
+            <label>Format
+              <select id="format">
+                <option value="mm:ss">00:00</option>
+                <option value="hh:mm:ss">00:00:00</option>
+                <option value="mm:ss.cc">00:00.00</option>
+                <option value="seconds">12s</option>
+              </select>
+            </label>
+            <label>Corner
+              <select id="position">
+                <option value="top-left">Top left</option>
+                <option value="top-right">Top right</option>
+                <option value="bottom-left">Bottom left</option>
+                <option value="bottom-right" selected>Bottom right</option>
+              </select>
+            </label>
+            <label>Size <input id="size" type="range" min="3" max="20" value="7" /></label>
+            <label class="row">Color <input id="color" type="color" value="#ffffff" /></label>
+            <label class="row"><input id="box" type="checkbox" checked /> Dark background box</label>
+          </div>
+        </fieldset>
+
+        <button id="export" disabled>Export MP4</button>
+        <div id="progressWrap" hidden>
+          <progress id="progress" max="1" value="0"></progress>
+          <span id="status"></span>
+          <button id="cancel" class="secondary">Cancel</button>
+        </div>
+        <p id="error" class="error"></p>
+      </section>
+
+      <section id="result" class="result" hidden>
+        <h2>Result</h2>
+        <video id="output" controls playsinline></video>
+        <a id="download" class="button">Download MP4</a>
+      </section>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

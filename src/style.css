@@ -1,0 +1,33 @@
+:root { color-scheme: dark; font-family: system-ui, sans-serif; --accent: #6c8cff; }
+body { margin: 0; background: #111318; color: #e6e6e6; }
+header { padding: 16px 24px 0; }
+h1 { margin: 0; font-size: 22px; }
+.sub { margin: 4px 0 0; color: #999; font-size: 14px; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; padding: 16px 24px; }
+.result { grid-column: 1 / -1; }
+@media (max-width: 800px) { main { grid-template-columns: 1fr; } }
+
+.drop { display: grid; place-items: center; height: 320px; border: 2px dashed #444; border-radius: 12px; cursor: pointer; color: #aaa; }
+.drop.over { border-color: var(--accent); color: #fff; }
+.preview { position: relative; width: fit-content; max-width: 100%; }
+.preview video, .result video { display: block; max-width: 100%; max-height: 60vh; border-radius: 8px; background: #000; }
+.overlay { position: absolute; pointer-events: none; line-height: 1; white-space: pre; }
+.overlay.boxed { background: rgb(0 0 0 / 0.5); }
+.overlay.outlined { text-shadow: 0 0 2px #000, 0 0 2px #000, 0 0 2px #000; }
+.meta { color: #999; font-size: 13px; }
+
+.controls { display: flex; flex-direction: column; gap: 12px; }
+fieldset { border: 1px solid #333; border-radius: 10px; display: flex; flex-direction: column; gap: 10px; }
+#timerOpts { display: flex; flex-direction: column; gap: 10px; }
+#timerOpts.disabled { opacity: 0.4; pointer-events: none; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+label.row { flex-direction: row; align-items: center; gap: 8px; }
+input[type=number], select { padding: 6px; background: #1d2027; color: inherit; border: 1px solid #444; border-radius: 6px; }
+
+button, .button { padding: 10px 14px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; font-size: 15px; cursor: pointer; text-decoration: none; text-align: center; display: inline-block; }
+button:disabled { opacity: 0.4; cursor: default; }
+button.secondary { background: #333; padding: 6px 10px; font-size: 13px; }
+#progressWrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; }
+progress { width: 100%; }
+.error { color: #ff7b7b; font-size: 13px; white-space: pre-wrap; }
+.result .button { margin-top: 12px; }
